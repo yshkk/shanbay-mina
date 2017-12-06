@@ -1,0 +1,249 @@
+<style lang="less">
+.container {
+  -webkit-font-smoothing: antialiased;
+  padding: 0 20rpx;
+}
+.title {
+  font-size: 20pt;
+  font-weight: 400;
+}
+.source {
+  color: #666;
+  font-size: 12pt;
+  text-align: left;
+  width: 100%;
+  margin: 15rpx 0 20rpx;
+}
+.article-image {
+  width: 100%;
+}
+.complete-button {
+  width: 60%;
+  border-radius: 5px;
+  margin: 20px auto;
+  padding-top: 2px;
+  font-size: 14px;
+  background-color: rgb(32, 158, 133);
+  color: white;
+  overflow: hidden;
+  height: 40px;
+}
+.paragrah {
+  -webkit-font-smoothing: antialiased;
+  margin: 20rpx 0;
+  text-align: justify;
+}
+</style>
+<template>
+  <view class="container" id="{{articleId}}" @tap="hideInfo">
+    <view class="title" >{{title_en}}</view>
+    <text class="source">via: {{source.name_en}}</text>
+    <image src="{{articleImage.img.url}}" class="article-image" mode='widthFix' id="{{articleImage.id}}" alt="{{articleImage.img.desc}}"/>
+    <!-- <repeat for="{{paragrahs}}" >
+      <paragrah :paragrah="item.sent" :id="item._id"/>
+      <view id="{{paragrah._id}}">
+        <repeat for="{{toArray(paragrah)}}" item="sentence">
+          <sentence :sentence="sentence" />
+        </repeat>
+      </view>
+    </repeat> -->
+      <!-- paragraph end -->
+      <view wx:for="{{paragrahs}}" wx:key="paragrah._id" wx:for-item="paragrah">
+        <view class="paragrah" id="{{paragrah._id}}">
+          <view class="sentence" wx:for="{{paragrah.sent}}" wx:key="index" wx:for-item="sentence">
+            <text wx:for="{{sentence}}" wx:key="index" wx:for-item="word" @tap="showInfo({{index}},{{word}})">
+              <text class='word'>{{word}} </text>
+            </text>
+          </view>
+        </view>
+      </view>
+    <button class="complete-button"> view comments </button>
+    <information />
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+// import X2JS from '../util/x2js.js'
+import parseXml from '../util/parse-xml.js'
+import Infomation from '../components/information'
+export default class Article extends wepy.page {
+  config = {
+    navigationBarTitleText: '阅读'
+  };
+  components={
+    information: Infomation
+  }
+  data = {
+    id: 'baitxn',
+    title_en:
+      "Chinese actress Liu Yifei to play Mulan in Disney's live-action adaptation",
+    title_cn: '刘亦菲将出演迪士尼真人版《花木兰》',
+    original_url:
+      'http://www.chinadaily.com.cn/culture/2017-11/30/content_35133236.htm',
+    date: '2017-12-03',
+    is_reviewed: false,
+    is_liked: false,
+    is_finished: false,
+    source: {
+      id: 'bczkqi',
+      name_en: 'China Daily',
+      name_cn: '中国日报',
+      pattern: '.chinadaily.com.cn/',
+      logo_urls: [
+        'https://media-image1.baydn.com/read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png@90Q',
+        'http://media-image1.qiniu.baydn.com/read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png?imageView2/2/q/90'
+      ],
+      logo_name:
+        'read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png',
+      available_in_china: true
+    },
+    used_time: 0,
+    content:
+      '<article_content id="A152541"> <para id="A152541P123612"> <href></href> <img><url>https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q</url><desc><![CDATA[]]></desc></img> </para><para id="A152541P123588"> <sent id="A152541P123588S171915"><![CDATA[Chinese actress Liu Yifei is set to star as the titular female warrior in Disney\'s live-action adaptation of the classic Chinese epic, Mulan.]]></sent> </para> <para id="A152541P123591"> <sent id="A152541P123591S171918"><![CDATA[Liu was cast after a yearlong search worldwide, beating nearly 1,000 hopefuls for the role, the Associated Press reported.]]></sent> </para> <para id="A152541P123594"> <sent id="A152541P123594S171921"><![CDATA[A team of casting directors travelled across five continents for the demanding role, which requires mastery of martial arts, ability to speak English and the ineffable charisma to partake the role of a Disney protagonist.]]></sent> </para> <para id="A152541P123597"> <sent id="A152541P123597S171924"><![CDATA[Disney, which has been criticized in the past for casting Caucasian actors for Asian roles (Related: Fans call on Disney \'not to whitewash\'Mulan), focused on discovering an ethnically Chinese young woman to play Hua Mulan, who impersonates herself as a man to take her ailing father\'s place in the battlefield in the fifth-century.]]></sent> </para> <para id="A152541P123600"> <sent id="A152541P123600S171927"><![CDATA[Liu, a prominent young star in China\'s entertainment industry, is most praised by the public for her pure and innocent looks and image.]]></sent> <sent id="A152541P123600S171930"><![CDATA[She is fluent in English, having spent some years of her childhood in Queens, New York, and a graduate of Beijing Film Academy, one of the top institutions for cinema arts.]]></sent> </para> <para id="A152541P123603"> <sent id="A152541P123603S171933"><![CDATA[Liu has starred in English films before, including The Forbidden Kingdom (2008) opposite Jackie Chan and Jet Li and Outcast (2014), alongside Nicolas Cage and Hayden Christensen.]]></sent> <sent id="A152541P123603S171936"><![CDATA[Liu also worked with Emile Hirsch in The Chinese Widow, which opened the Shanghai International Film Festival in June.]]></sent> </para> <para id="A152541P123606"> <sent id="A152541P123606S171939"><![CDATA[The film will be helmed by Niki Caro and set for a release in 2019.]]></sent> <sent id="A152541P123606S171942"><![CDATA[Chris Bender, Jason Reed and Jake Weiner will be producing the film.]]></sent> <sent id="A152541P123606S171945"><![CDATA[House of Flying Daggers and Crouching Tiger, Hidden Dragon producer Bill Kong will be executive producer.]]></sent> </para> <para id="A152541P123609"> <sent id="A152541P123609S171948"><![CDATA[The original animated version in 1998, voiced by Ming-Na Wen, Eddie Murphy and B.D.]]></sent> <sent id="A152541P123609S171951"><![CDATA[Wong, earned $304.3 million worldwide as well as Golden Globe and Academy Award nominations.]]></sent> </para> </article_content>',
+    last_read_sentence: '',
+    share_urls: {
+      shanbay:
+        'https://www.shanbay.com/news/articles/baitxn/share?channel=shanbay',
+      weibo: 'https://www.shanbay.com/news/articles/baitxn/share?channel=weibo',
+      qzone: 'https://www.shanbay.com/news/articles/baitxn/share?channel=qzone',
+      wechat:
+        'https://www.shanbay.com/news/articles/baitxn/share?channel=wechat'
+    },
+    note_paras: [
+      'A152541P123597',
+      'A152541P123600',
+      'A152541P123594',
+      'A152541P123591',
+      'A152541P123606',
+      'A152541P123603',
+      'A152541P123588',
+      'A152541P123609'
+    ],
+    thumbnail_urls: [
+      'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
+      'http://media-image1.qiniu.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png?imageView2/2/q/90'
+    ],
+    min_used_seconds: 39,
+    grade_info: '六级/考研',
+    length: 312,
+    num_reviews: 15,
+    publish_status: 1,
+    studyroom_share: {
+      image_url:
+        'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
+      redirect_url: 'https://www.shanbay.com/news/articles/baitxn/share'
+    },
+    track_object: {
+      code: 'b4d71',
+      share_url: 'https://www.shanbay.com/news/articles/baitxn/share',
+      object_id: 152541
+    },
+    share_content: {
+      topic: '扇贝阅读',
+      description: '扇贝阅读帮你“用英语”看世界。',
+      image_url:
+        'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
+      title: '刘亦菲将出演迪士尼真人版《花木兰》'
+    },
+    grade_scores:
+      '{"L8:GRE": 99.1, "L1:primary": 37.84, "L4:cet4": 85.59, "L5:cet6": 89.19, "L7:SAT": 97.3, "L2:secondary": 62.16, "L6:IELTS&TOEFL": 92.79, "L3:high": 78.38}',
+    tags: [],
+    types: 1,
+    created_at: '2017-12-03T07:29:54+0000',
+    annotation: [
+      {
+        sentence_id: 'A152541P123588S171915',
+        annotation: { 'set to': [5, 6], 'the classic': [18, 19] }
+      },
+      {
+        sentence_id: 'A152541P123594S171921',
+        annotation: { 'martial arts': [17, 18], 'role of': [30, 31] }
+      },
+      {
+        sentence_id: 'A152541P123597S171924',
+        annotation: {
+          'in the past': [5, 6, 7],
+          'call on someone': [17, 18],
+          'has been': [2, 3]
+        }
+      },
+      {
+        sentence_id: 'A152541P123600S171927',
+        annotation: {
+          'the public': [13, 14],
+          'entertainment industry': [7, 8],
+          'star in': [4, 5]
+        }
+      },
+      {
+        sentence_id: 'A152541P123606S171939',
+        annotation: { 'set for': [9, 10] }
+      },
+      {
+        sentence_id: 'A152541P123606S171945',
+        annotation: {
+          'executive producer': [14, 15],
+          'house of flying daggers': [0, 1, 2, 3]
+        }
+      },
+      {
+        sentence_id: 'A152541P123609S171951',
+        annotation: { 'as well as': [5, 6, 7], 'academy award': [11, 12] }
+      }
+    ]
+  };
+  methods={
+    hideInfo(e) {
+      if (e.target.dataset.wpyshowinfoA === void 0) { // 点击文字以外的区域
+        this.$invoke('information', 'hide')
+      }
+    },
+    showInfo(index, word, e) {
+      this.$invoke('information', 'show', {
+        word: word.replace(/\W$/, '')
+      })
+      console.log(index)
+    }
+  }
+  computed = {
+    articleContent() {
+      return this.parseContent(this.data.content)
+    },
+    articleId() {
+      return this.articleContent.attributes.id
+    },
+    contents() {
+      debugger
+      return this.articleContent.children.filter(item => item.type === 'element')
+    }
+  //   paragrahs() {
+  //     debugger
+  //     return this.contents.slice(1).map(paragrah => {
+  //       if (!Array.isArray(paragrah.sent)) {
+  //         paragrah.sent = [].concat(paragrah.sent)
+  //       }
+  //       paragrah.sent = paragrah.sent.map(sent => sent.split(' '))
+  //       return paragrah
+  //     })
+  //   },
+  //   articleImage() {
+  //     return this.articleContent.para[0]
+  //   },
+  //   annotationObject() {
+  //     let annotationObject = {}
+  //     this.data.annotation.forEach(element => {
+  //       annotationObject[element.sentence_id] = element.annotation
+  //     })
+  //     return annotationObject
+  //   }
+  };
+  parseContent(content) {
+    // var x2js2 = new X2JS()
+    // console.log(x2js2.xml2js(content))
+    // return x2js2.xml2js(content)
+
+    return parseXml(content, {preserveCdata: true, ignoreUndefinedEntities: true})
+  }
+}
+</script>

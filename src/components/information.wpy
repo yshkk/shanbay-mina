@@ -1,0 +1,210 @@
+<style lang="less">
+@font-face {
+    font-family: 'iconfont';
+    src: url(data:application/font-woff2;charset=utf-8;base64,d09GMgABAAAAAAWEAA0AAAAACrwAAAUtAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP0ZGVE0cGh4GVgCCWhEICohohyELEAABNgIkAxgEIAWFCAdSG/4IUZQwTjbZR0K5cVmwSJKkjSsBxdt8eLp9f+7MpKlHu6mFehDrf9dC1VIIXwAPb7v3/WPW5UqSFRP6VdObEpgp4f7nmOmicLhh/QUPbIIj+otMi6YO4AnsDYe7ToymAy07OsZ7h3hrdXXSlfA940oACADGHUFCADAVOOYrD00AEoAjgELQ+AgGQAFI/kWWowfqpB4AlsHXk19sCAEKL6FsW70VNCLb6HuaVv6vxCoRwAECYYBGs3uKKDUS5ucYyQCWEIUy+iz87PHnp///H8L3tstlp0uicxUILUcGgJAFOgAU8jsJ+BtokCatoYhRYBMtD3YCsgPkAwAAwxLxf/PwMYSTg8hO4iaWiCwkjhKJxEnk7Ciytnbo2MGy6hN7DoDNolq37xzLQnKAqwf2nNjhyMokUlZ9a9++dYRw6j3KvZr9qn3cGuc1zs6rV2u1YgvNflfdpk2uzUS1fv1usVhzFm4ysdlMTCaZwSDdYIyQao3cVaODXMzJzWanTt2z0FOJifKLxgK5wSRTmeVGI2cwcLLb5iwu/kT8AoNBajRyZrPcZJLNPlHKKrpp9LFPmDSG2sCWOrsY7RqzbHdrZM3m9uNzmqVn3TL5bqduc4uhRaMnZG/C6eeqZ4kngolKp14NqmrlOy8qL6gvqS5zGie9Xqez3xHaA7TUakcde+KJ8umi02FQahsqqwewLzFH26S86fRzL3rTs0RLckJ3auPTBBm9/nKQ1c6LLtSaC/6Wuy5NKMoAuYRSK7aq+WoqnbPnFtc627Izjq7lyzHLYvO4wvNlxamtr8ajyyP/s+AjH2SGz5wOm8myt/4pdMZy93CmxNrV2sW8ac3EGJebM+rolf65ZZeT/PXyF1bVzR3+RFz00XqHC16LAz9GXI78B1FJMLX87JUVNIMy+jpB/HiYfsumxafQ8nl6HTX8cdyUqW+qwJJ+WZ+aJlv2/3fWnpXrM9vLDpX55dCP+62Oj+09OsKMMkePMqPs/g/G6g6WaS4NlVfO0t9d+873mXWkq5uqpWoRMVZLursFZBHRujZv4Ys9GWxbevOsa8fkjelUWXsp0o+udMub3TcuXRK+hkEsmNPnmqdQcNPmJMueuiwlb6+NnZLQRr+dLXxfSnp7iRQREduxcf6PHOflxXE/SttjmZfgNYFIX63kajlltb5N1lmyOthp2eYtcYn6Cf/YxKoUbRE7qz+5kXnjk+pd4e2LVGxvVZsWNFmk34LaHjzBm1pt8JenkhMuEnLKbLcwa+EiNm5LdpmZJbHYHycEjfRHIsblzfXLK+mO+G0bou8mfP5yUPhCq/RflQrFDDbLB4S3S/SzzAYgRGmh2pQaC8qib+QteAUAAJAZoD/hBSgTKRsBCCw2AgAKwGIB/wPYeg8k7CAcs4SQNASKQBfQhF4lMtRtwCN2HfiEPgRWWOQeLGYXOiRSRABCAYCwlgsUS/OBZm2IyFCXA4+j/cBn7TGwZL7aWSwwusHK06+JwqAt3shbvTHJNg16dGueM4gF9m6RYq+t+KvAdNSyIP9goFaTFkM6KfTDNwH7rd6/ICnTpN+AtkZvMSJFw9WE2WMio5sSi4zdzbuus2zAsBaxcpiDmuOa9aO+yzcXdpFs0qlTDnrrzf9IuyYNBkXCrajSgeGW2MHB5usPiqeuFacBmu9TB4HW/pfrlSpKlOaeg5EaxjTj9NDc3FhxfNW2y6ay0kAUnIqgzA2K0IQRNDZ1t7S3xTDHQNvZK+obBnqGBoZ6GtpG2xSZib627hYAAAA=) format('woff2'),
+        url(data:application/font-woff;charset=utf-8;base64,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) format('woff'),
+        url('iconfont.ttf') format('truetype'),
+        url('iconfont.svg#iconfont') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+.information-mask{
+	display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 10000;
+	pointer-events: none;
+}
+
+.information-show{
+	display: block;
+}
+
+.information{
+	position: absolute;
+  bottom: 0;
+  width: 100%;
+	margin: 0 auto;
+  height: 300rpx;
+	opacity: 1;
+	overflow: hidden;
+  border-top: 10px solid gray;
+	background-color: #fff;
+	padding: 20px;
+  box-sizing:border-box;
+	font-size: 14px;
+	line-height: 18px;
+	word-break: break-all;
+	/* transform: translateX(-50%) translateY(-50%); */
+	animation: slideInUp .3s ;
+  .word{
+    font-size: 16pt;
+    font-weight: 400;
+    color:rgb(32, 158, 133);
+  }
+  .pron{
+    color:gray;
+    margin-left: 10rpx;
+  }
+  .audio{
+    font-family: 'iconfont';
+    float:right;
+    margin-top:30rpx;
+    color:rgb(32, 158, 133);
+    &:before{
+      content: '\e65f';
+      margin-right: 10rpx;
+      font-size: 10pt;
+    }
+  }
+  .definition{
+    margin-top: 16rpx;
+    .definition-item{
+      display: block;
+    }
+  }
+}
+.slidedown{
+  animation: slideOutDown .3s;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slideOutDown {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+</style>
+
+<template>
+	<view class="information-mask" :class="{information-show:!!visible,slidedown:isSlidingDown}">
+		<view class="information" style="{{cssText}}" @tap.stop="stopPropagation">
+      <text class="word">{{word}}</text>
+      <text class="pron">{{pron}}</text>
+      <audio class="audio" id="information" src="{{audio}}"/>
+      <view class="definition">
+        <repeat for="{{definition}}">
+          <text class="definition-item">{{item}}</text>
+        </repeat>
+      </view>
+    </view>
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class TipBox extends wepy.component {
+  data = {
+    visible: false,
+    position: '',
+    margin: '',
+    word: '',
+    audio: '',
+    pron: '',
+    definition: '',
+    isSlidingDown: false
+  };
+
+  computed = {
+    cssText() {
+      let styles = {}
+      if (this.position === 'top') {
+        styles.position = this.position
+        styles.top = this.margin || ''
+      } else if (this.position === 'bottom') {
+        styles.position = this.position
+        styles.top = 'initial'
+        styles.bottom = this.margin || ''
+      }
+      let css = Object.keys(styles)
+      .map(key => (key + ':' + styles[key]))
+      .join(';')
+      return css
+    }
+  };
+  methods={
+    stopPropagation(e) {
+      console.log(e)
+      e.stopPropagation()
+    }
+  }
+  show({word, options}) {
+    if (!word) {
+      return
+    }
+    wx.request({
+      url: `https://api.shanbay.com/bdc/search/?word=${word}`,
+      success: (res) => {
+        if (res.data.msg === 'SUCCESS') {
+          var {audio, pron, definition} = res.data.data
+          this.audio = audio
+          this.pron = pron ? `/${pron}/` : ''
+          this.definition = definition.split(/\r\n|\n|\r/)
+        } else {
+          this.definition = [].concat(res.data.msg)
+        }
+        this.$apply()
+      }
+    })
+    let conf = Object.assign({
+      position: '',
+      margin: '0'
+    }, options)
+
+    // this.hide()
+
+    this.position = conf.position
+    this.margin = conf.margin
+    this.visible = true
+    this.word = word
+    this.audio = ''
+    this.pron = ''
+    this.definition = ''
+    console.log(this.audioCtx)
+    this.$apply()
+
+    // if (this.timer) {
+    //   clearTimeout(this.timer)
+    //   this.timer = null
+    // }
+    // this.timer = setTimeout(() => this.hide(), 2000)
+  }
+
+  hide() {
+    this.isSlidingDown = true
+    this.$apply()
+    setTimeout(() => {
+      this.visible = false
+      this.word = ''
+      this.audio = ''
+      this.pron = ''
+      this.definition = ''
+      this.position = ''
+      this.margin = ''
+      this.isSlidingDown = false
+      this.$apply()
+    }, 300)
+  }
+  onReady (e) {
+    // 使用 wx.createAudioContext 获取 audio 上下文 context
+    this.audioCtx = wx.createAudioContext('information')
+  }
+}
+</script>
