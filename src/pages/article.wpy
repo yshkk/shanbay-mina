@@ -28,37 +28,43 @@
   overflow: hidden;
   height: 40px;
 }
-.paragrah {
-  -webkit-font-smoothing: antialiased;
-  margin: 20rpx 0;
-  text-align: justify;
+.content{
+  width: 100%;
+  .paragrah {
+    -webkit-font-smoothing: antialiased;
+    font-size:15pt;
+    margin: 20rpx 0;
+    text-align: justify;
+    .word{
+      display: inline-block;
+      margin-right: 10rpx;
+      padding: 0 2px;
+      border-radius: 4px;
+      -webkit-transition: all 2s ease-in;
+      &.highlight{
+        background-color: rgb(32, 158, 133);
+        color: #fff;
+      }
+    }
+}
 }
 </style>
 <template>
   <view class="container" id="{{articleId}}" @tap="hideInfo">
+    <information />
     <view class="title" >{{title_en}}</view>
     <text class="source">via: {{source.name_en}}</text>
     <image src="{{articleImage.img.url}}" class="article-image" mode='widthFix' id="{{articleImage.id}}" alt="{{articleImage.img.desc}}"/>
-    <!-- <repeat for="{{paragrahs}}" >
-      <paragrah :paragrah="item.sent" :id="item._id"/>
-      <view id="{{paragrah._id}}">
-        <repeat for="{{toArray(paragrah)}}" item="sentence">
-          <sentence :sentence="sentence" />
-        </repeat>
-      </view>
-    </repeat> -->
-      <!-- paragraph end -->
-      <view wx:for="{{paragrahs}}" wx:key="paragrah._id" wx:for-item="paragrah">
+      <view wx:for="{{paragrahs}}" wx:key="paragrah._id" wx:for-item="paragrah" class="content">
         <view class="paragrah" id="{{paragrah._id}}">
           <view class="sentence" wx:for="{{paragrah.sent}}" wx:key="index" wx:for-item="sentence">
             <text wx:for="{{sentence.words}}" wx:key="index" wx:for-item="word" @tap="showInfo({{index}},{{word}},{{sentence.id}})" id="{{sentence.id}}">
-              <text class='word'>{{word}} </text>
+              <text class='word' :class="{highlight:selectedWordPosition[0]===sentence.id && selectedWordPosition[1]===index}">{{word}} </text>
             </text>
           </view>
         </view>
       </view>
     <button class="complete-button"> view comments </button>
-    <information />
   </view>
 </template>
 
@@ -74,6 +80,7 @@ export default class Article extends wepy.page {
     information: Infomation
   }
   data = {
+    selectedWordPosition: [0, 0],
     id: 'baitxn',
     title_en:
       "Chinese actress Liu Yifei to play Mulan in Disney's live-action adaptation",
@@ -196,15 +203,16 @@ export default class Article extends wepy.page {
     hideInfo(e) {
       if (e.target.dataset.wpyshowinfoA === void 0) { // 点击文字以外的区域
         this.$invoke('information', 'hide')
+        this.selectedWordPosition = [0, 0]
       }
     },
     showInfo(index, word, sentenceId, e) {
-      let w = word.replace(/\W$/, '') // 去除标点（句号逗号）的单词
+      this.selectedWordPosition = [sentenceId, index]
+      let w = word.replace((/\W$|^\W/), '') // 去除标点（句号逗号）的单词
       let phrase = this.annotationObject[sentenceId] && this.annotationObject[sentenceId][index] // 所点击的单词可能是个短语
       this.$invoke('information', 'show', {
         word: phrase || w
       })
-      console.log(index)
     }
   }
   computed = {

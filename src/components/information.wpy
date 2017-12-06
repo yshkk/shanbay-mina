@@ -14,7 +14,6 @@
 	width: 100%;
 	height: 100%;
 	z-index: 10000;
-	pointer-events: none;
 }
 
 .information-show{
@@ -35,7 +34,8 @@
   box-sizing:border-box;
 	font-size: 14px;
 	line-height: 18px;
-	word-break: break-all;
+  word-break: break-all;
+  will-change: transform;
 	/* transform: translateX(-50%) translateY(-50%); */
 	animation: slideInUp .3s ;
   .word{
@@ -94,10 +94,10 @@
 
 <template>
 	<view class="information-mask" :class="{information-show:!!visible,slidedown:isSlidingDown}">
-		<view class="information" style="{{cssText}}" @tap.stop="stopPropagation">
+		<view class="information" style="{{cssText}}" @tap.stop="stopPropagation" @touchmove="touchmove" @touchstart="touchstart">
       <text class="word">{{word}}</text>
       <text class="pron">{{pron}}</text>
-      <audio class="audio" id="information" src="{{audio}}"/>
+      <audio class="audio" id="audio" src="{{audio}}" @tap="play"/>
       <view class="definition">
         <repeat for="{{definition}}">
           <text class="definition-item">{{item}}</text>
@@ -141,14 +141,26 @@ export default class TipBox extends wepy.component {
   };
   methods={
     stopPropagation(e) {
-      console.log(e)
-      e.stopPropagation()
+    },
+    play() {
+      this.audioCtx.play()
+    },
+    touchmove(e) {
+      let currentY = e.touches[0].pageY
+      let isSlideDown = currentY > this.lastY
+      this.handleSlide(isSlideDown)
+    },
+    touchstart(e) {
+      this.lastY = e.touches[0].pageY
     }
   }
   show({word, options}) {
     if (!word) {
       return
     }
+    this.visible = true
+    this.word = word
+    this.$apply()
     wx.request({
       url: `https://api.shanbay.com/bdc/search/?word=${word}`,
       success: (res) => {
@@ -157,36 +169,16 @@ export default class TipBox extends wepy.component {
           this.audio = audio
           this.pron = pron ? `/${pron}/` : ''
           this.definition = definition.split(/\r\n|\n|\r/)
+          this.audioCtx = wx.createAudioContext('audio')
+          this.audioCtx.setSrc(audio)
+          console.log(this.audioCtx)
         } else {
           this.definition = [].concat(res.data.msg)
         }
         this.$apply()
       }
     })
-    let conf = Object.assign({
-      position: '',
-      margin: '0'
-    }, options)
-
-    // this.hide()
-
-    this.position = conf.position
-    this.margin = conf.margin
-    this.visible = true
-    this.word = word
-    this.audio = ''
-    this.pron = ''
-    this.definition = ''
-    console.log(this.audioCtx)
-    this.$apply()
-
-    // if (this.timer) {
-    //   clearTimeout(this.timer)
-    //   this.timer = null
-    // }
-    // this.timer = setTimeout(() => this.hide(), 2000)
   }
-
   hide() {
     this.isSlidingDown = true
     this.$apply()
@@ -202,9 +194,12 @@ export default class TipBox extends wepy.component {
       this.$apply()
     }, 300)
   }
-  onReady (e) {
-    // 使用 wx.createAudioContext 获取 audio 上下文 context
-    this.audioCtx = wx.createAudioContext('information')
+  handleSlide(isSlideDown) {
+    if (isSlideDown) {
+      if (this.isSlidingDown === false) {
+        this.hide()
+      }
+    }
   }
 }
 </script>
