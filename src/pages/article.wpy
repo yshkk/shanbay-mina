@@ -1,7 +1,7 @@
 <style lang="less">
 .container {
   -webkit-font-smoothing: antialiased;
-  padding: 0 20rpx;
+  padding: 0 25rpx;
 }
 .title {
   font-size: 20pt;
@@ -16,7 +16,10 @@
 }
 .article-image {
   width: 100%;
+  height:200px;
+  background-color: #e8e8e8;
 }
+
 .complete-button {
   width: 60%;
   border-radius: 5px;
@@ -34,9 +37,14 @@
     content: "";
     flex: auto;
   }
+  &.description{
+  margin-bottom: 40rpx;
+  color: #999;
+  }
   -webkit-font-smoothing: antialiased;
   width: 100%;
   font-size:15pt;
+  color: #424242;
   margin: 20rpx 0;
   display: flex;
   justify-content: space-between;
@@ -45,10 +53,10 @@
     display: inline-flex;
     padding: 0 5px;
     border-radius: 4px;
-    -webkit-transition: all .3s ease-in;
+    -webkit-transition: all .1s;
     padding:10rpx 4rpx 20rpx;
-    line-height: 10rpx;
-    margin-right:4pt;
+    line-height: 14rpx;
+    margin-right:2pt;
     &.highlight{
       background-color: rgb(32, 158, 133);
       color: #fff;
@@ -57,19 +65,28 @@
 }
 </style>
 <template>
-  <view class="container" id="{{articleId}}" @tap="handleTap">
+  <view class="container" id="{{detail.articleId}}" @tap="handleTap">
     <information />
-    <view class="title" >{{title_en}}</view>
-    <text class="source">via: {{source.name_en}}</text>
-    <image src="{{articleImage.img.url}}" class="article-image" mode='widthFix' id="{{articleImage.id}}" alt="{{articleImage.img.desc}}"/>
+    <view class="title" >{{detail.title_en}}</view>
+    <text class="source">via: {{detail.source.name_en}}</text>
+    <image src="{{articleImage.img.url}}" class="article-image" mode='widthFix' id="{{articleImage.id}}" alt="{{articleImage.img.desc.__cdata}}"/>
+    <view class="paragrah description">
+      <text wx:for="{{articleImageDescription}}" wx:key="index" wx:for-item="word"
+      data-index="{{index}}" data-word="{{word}}" data-sentenceid="{{articleImageDescriptionId}}"
+      id="{{articleImageDescriptionId}}" class='word' :class="{highlight:selectedWordPosition[0]===articleImageDescriptionId && selectedWordPosition[1]===index}">
+        {{word}}
+      </text>
+    </view>
       <view wx:for="{{paragrahs}}" wx:key="paragrah._id" wx:for-item="paragrah" class="paragrah" id="{{paragrah._id}}">
           <block  wx:for="{{paragrah.sent}}" wx:key="index" wx:for-item="sentence">
-            <text wx:for="{{sentence.words}}" wx:key="index" wx:for-item="word" data-index="{{index}}" data-word="{{word}}" data-sentenceid="{{sentence.id}}" id="{{sentence.id}}" class='word' :class="{highlight:selectedWordPosition[0]===sentence.id && selectedWordPosition[1]===index}">
+            <text wx:for="{{sentence.words}}" wx:key="index" wx:for-item="word" data-index="{{index}}" data-word="{{word}}"
+            data-sentenceid="{{sentence.id}}" id="{{sentence.id}}" class='word' :class="{highlight:selectedWordPosition[0]===sentence.id && selectedWordPosition[1]===index}">
               {{word}}
             </text>
           </block>
       </view>
-    <button class="complete-button"> view comments </button>
+      <!-- 加wx:if是为了让加载完后才显示button，不然文章还没加载完整个页面就一个孤零零的button太丑了 -->
+    <button class="complete-button" wx:if="{{!!detail.title_en}}"> view comments </button>
   </view>
 </template>
 
@@ -86,123 +103,13 @@ export default class Article extends wepy.page {
   }
   data = {
     selectedWordPosition: [0, 0],
-    id: 'baitxn',
-    title_en:
-      "Chinese actress Liu Yifei to play Mulan in Disney's live-action adaptation",
-    title_cn: '刘亦菲将出演迪士尼真人版《花木兰》',
-    original_url:
-      'http://www.chinadaily.com.cn/culture/2017-11/30/content_35133236.htm',
-    date: '2017-12-03',
-    is_reviewed: false,
-    is_liked: false,
-    is_finished: false,
-    source: {
-      id: 'bczkqi',
-      name_en: 'China Daily',
-      name_cn: '中国日报',
-      pattern: '.chinadaily.com.cn/',
-      logo_urls: [
-        'https://media-image1.baydn.com/read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png@90Q',
-        'http://media-image1.qiniu.baydn.com/read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png?imageView2/2/q/90'
-      ],
-      logo_name:
-        'read/media_store/article/650d4812b646c5baf40f2f5741e9d60b.png',
-      available_in_china: true
+    detail: {
+      content: '<article_content ><para><href></href><img><url></url><desc></desc></img></para><para ><sent><![CDATA[ ]]></sent></para></article_content>',
+      articleId: null,
+      title_en: '',
+      source: {}
     },
-    used_time: 0,
-    content:
-      '<article_content id="A152541"> <para id="A152541P123612"> <href></href> <img><url>https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q</url><desc><![CDATA[]]></desc></img> </para><para id="A152541P123588"> <sent id="A152541P123588S171915"><![CDATA[Chinese actress Liu Yifei is set to star as the titular female warrior in Disney\'s live-action adaptation of the classic Chinese epic, Mulan.]]></sent> </para> <para id="A152541P123591"> <sent id="A152541P123591S171918"><![CDATA[Liu was cast after a yearlong search worldwide, beating nearly 1,000 hopefuls for the role, the Associated Press reported.]]></sent> </para> <para id="A152541P123594"> <sent id="A152541P123594S171921"><![CDATA[A team of casting directors travelled across five continents for the demanding role, which requires mastery of martial arts, ability to speak English and the ineffable charisma to partake the role of a Disney protagonist.]]></sent> </para> <para id="A152541P123597"> <sent id="A152541P123597S171924"><![CDATA[Disney, which has been criticized in the past for casting Caucasian actors for Asian roles (Related: Fans call on Disney \'not to whitewash\'Mulan), focused on discovering an ethnically Chinese young woman to play Hua Mulan, who impersonates herself as a man to take her ailing father\'s place in the battlefield in the fifth-century.]]></sent> </para> <para id="A152541P123600"> <sent id="A152541P123600S171927"><![CDATA[Liu, a prominent young star in China\'s entertainment industry, is most praised by the public for her pure and innocent looks and image.]]></sent> <sent id="A152541P123600S171930"><![CDATA[She is fluent in English, having spent some years of her childhood in Queens, New York, and a graduate of Beijing Film Academy, one of the top institutions for cinema arts.]]></sent> </para> <para id="A152541P123603"> <sent id="A152541P123603S171933"><![CDATA[Liu has starred in English films before, including The Forbidden Kingdom (2008) opposite Jackie Chan and Jet Li and Outcast (2014), alongside Nicolas Cage and Hayden Christensen.]]></sent> <sent id="A152541P123603S171936"><![CDATA[Liu also worked with Emile Hirsch in The Chinese Widow, which opened the Shanghai International Film Festival in June.]]></sent> </para> <para id="A152541P123606"> <sent id="A152541P123606S171939"><![CDATA[The film will be helmed by Niki Caro and set for a release in 2019.]]></sent> <sent id="A152541P123606S171942"><![CDATA[Chris Bender, Jason Reed and Jake Weiner will be producing the film.]]></sent> <sent id="A152541P123606S171945"><![CDATA[House of Flying Daggers and Crouching Tiger, Hidden Dragon producer Bill Kong will be executive producer.]]></sent> </para> <para id="A152541P123609"> <sent id="A152541P123609S171948"><![CDATA[The original animated version in 1998, voiced by Ming-Na Wen, Eddie Murphy and B.D.]]></sent> <sent id="A152541P123609S171951"><![CDATA[Wong, earned $304.3 million worldwide as well as Golden Globe and Academy Award nominations.]]></sent> </para> </article_content>',
-    last_read_sentence: '',
-    share_urls: {
-      shanbay:
-        'https://www.shanbay.com/news/articles/baitxn/share?channel=shanbay',
-      weibo: 'https://www.shanbay.com/news/articles/baitxn/share?channel=weibo',
-      qzone: 'https://www.shanbay.com/news/articles/baitxn/share?channel=qzone',
-      wechat:
-        'https://www.shanbay.com/news/articles/baitxn/share?channel=wechat'
-    },
-    note_paras: [
-      'A152541P123597',
-      'A152541P123600',
-      'A152541P123594',
-      'A152541P123591',
-      'A152541P123606',
-      'A152541P123603',
-      'A152541P123588',
-      'A152541P123609'
-    ],
-    thumbnail_urls: [
-      'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
-      'http://media-image1.qiniu.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png?imageView2/2/q/90'
-    ],
-    min_used_seconds: 39,
-    grade_info: '六级/考研',
-    length: 312,
-    num_reviews: 15,
-    publish_status: 1,
-    studyroom_share: {
-      image_url:
-        'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
-      redirect_url: 'https://www.shanbay.com/news/articles/baitxn/share'
-    },
-    track_object: {
-      code: 'b4d71',
-      share_url: 'https://www.shanbay.com/news/articles/baitxn/share',
-      object_id: 152541
-    },
-    share_content: {
-      topic: '扇贝阅读',
-      description: '扇贝阅读帮你“用英语”看世界。',
-      image_url:
-        'https://media-image1.baydn.com/0a7dc8cab1b249dafa5dbf28cc815f485b83e02f997c589e5e8b19abba7f43ef.png@90Q',
-      title: '刘亦菲将出演迪士尼真人版《花木兰》'
-    },
-    grade_scores:
-      '{"L8:GRE": 99.1, "L1:primary": 37.84, "L4:cet4": 85.59, "L5:cet6": 89.19, "L7:SAT": 97.3, "L2:secondary": 62.16, "L6:IELTS&TOEFL": 92.79, "L3:high": 78.38}',
-    tags: [],
-    types: 1,
-    created_at: '2017-12-03T07:29:54+0000',
-    annotation: [
-      {
-        sentence_id: 'A152541P123588S171915',
-        annotation: { 'set to': [5, 6], 'the classic': [18, 19] }
-      },
-      {
-        sentence_id: 'A152541P123594S171921',
-        annotation: { 'martial arts': [17, 18], 'role of': [30, 31] }
-      },
-      {
-        sentence_id: 'A152541P123597S171924',
-        annotation: {
-          'in the past': [5, 6, 7],
-          'call on someone': [17, 18],
-          'has been': [2, 3]
-        }
-      },
-      {
-        sentence_id: 'A152541P123600S171927',
-        annotation: {
-          'the public': [13, 14],
-          'entertainment industry': [7, 8],
-          'star in': [4, 5]
-        }
-      },
-      {
-        sentence_id: 'A152541P123606S171939',
-        annotation: { 'set for': [9, 10] }
-      },
-      {
-        sentence_id: 'A152541P123606S171945',
-        annotation: {
-          'executive producer': [14, 15],
-          'house of flying daggers': [0, 1, 2, 3]
-        }
-      },
-      {
-        sentence_id: 'A152541P123609S171951',
-        annotation: { 'as well as': [5, 6, 7], 'academy award': [11, 12] }
-      }
-    ]
+    annotation: [{sentence_id: '', annotation: {}}]
   };
   methods={
     handleTap(e) {
@@ -213,16 +120,13 @@ export default class Article extends wepy.page {
         let {index, word, sentenceid} = e.target.dataset
         this.selectedWordPosition = [sentenceid, index]
         let w = word.replace((/\W$|^\W/), '') // 去除标点（句号逗号）的单词
-        let phrase = this.annotationObject[sentenceid] && this.annotationObject[sentenceid][index] // 所点击的单词可能是个短语
-        this.$invoke('information', 'show', {
-          word: phrase || w
-        })
+        this.$invoke('information', 'show', {word: w})
       }
     }
   }
   computed = {
     articleContent() {
-      return this.parseContent(this.data.content).article_content
+      return this.parseContent(this.data.detail.content).article_content
     },
     articleId() {
       return this.articleContent._id
@@ -232,26 +136,41 @@ export default class Article extends wepy.page {
         if (!Array.isArray(paragrah.sent)) {
           paragrah.sent = [].concat(paragrah.sent)
         }
-        paragrah.sent = paragrah.sent.map(sent => ({
-          words: sent.__cdata.split(' '),
-          id: sent._id
-        }))
+        paragrah.sent = paragrah.sent.map(sent => {
+          let id = sent._id
+          let words = sent.__cdata.split(' ')
+          if (this.annotationObject && this.annotationObject[id]) {
+            for (let startIndex in this.annotationObject[id]) {
+              let {len, phrase} = this.annotationObject[id][startIndex]
+              words.splice(startIndex, len, phrase)
+              while (len--) {
+                words.splice(startIndex + 1, 0, '')
+              }
+            }
+          }
+          return {words, id}
+        })
         return paragrah
       })
     },
     articleImage() {
       return this.articleContent.para[0]
     },
+    articleImageDescriptionId() {
+      return this.articleImage._id
+    },
+    articleImageDescription() {
+      return this.articleImage.img.desc.__cdata && this.articleImage.img.desc.__cdata.split(' ')
+    },
     annotationObject() {
       let annotationObject = {}
       this.data.annotation.forEach(element => {
-        let findWordsByIndex = {}
+        annotationObject[element.sentence_id] = {}
         for (let key in element.annotation) {
-          element.annotation[key].forEach(i => {
-            findWordsByIndex[i] = key
-          })
+          let startIndex = element.annotation[key][0]
+          let len = element.annotation[key].length
+          annotationObject[element.sentence_id][startIndex] = {len, phrase: key}
         }
-        annotationObject[element.sentence_id] = findWordsByIndex
       })
       return annotationObject
     }
@@ -259,6 +178,30 @@ export default class Article extends wepy.page {
   parseContent(content) {
     var x2js2 = new X2JS({keepCData: true})
     return x2js2.xml2js(content)
+  }
+  onLoad(options) {
+    wx.showLoading({
+      title: '加载中'
+    })
+    wx.request({
+      url: `https://www.shanbay.com/api/v2/news/articles/${options.id}/`,
+      success: (res) => {
+        if (res.data.msg === 'SUCCESS') {
+          Object.assign(this.detail, res.data.data)
+          wx.request({
+            url: `https://www.shanbay.com/api/v2/news/articles/${options.id}/annotation/`,
+            success: (res) => {
+              if (res.data.msg === 'SUCCESS') {
+                Object.assign(this.annotation, res.data.data)
+              }
+              // this.$apply()
+            }
+          })
+        }
+        this.$apply()
+        wx.hideLoading()
+      }
+    })
   }
 }
 </script>

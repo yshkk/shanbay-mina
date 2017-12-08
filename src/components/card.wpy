@@ -42,11 +42,9 @@
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
-          text-align:justify;
-          word-break:break-all;
         }
         .info-area{
-          font-size:11pt;
+          font-size:10pt;
           color: #666;
           opacity:.8;
           font-family: 'iconfont';
@@ -56,14 +54,14 @@
             font-size: 10pt;
           }
           .words{
-            margin-left: 40rpx;
+            margin-left: 30rpx;
             &:before{
               content: '\e7b7';
               margin-right: 10rpx;
             }
           }
           .reviews{
-            margin-left: 40rpx;
+            margin-left: 30rpx;
             &:before{
               content: '\e6cf';
               margin-right: 10rpx;

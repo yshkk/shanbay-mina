@@ -172,6 +172,10 @@ export default class TipBox extends wepy.component {
     }
     this.visible = true
     this.word = word
+    // 清空当前结果，避免在网络慢的情况下点击了下一个词 翻译框内容还停留在上一个词
+    this.pron = ''
+    this.definition = ''
+    this.audio = ''
     this.$apply()
     wx.request({
       url: `https://api.shanbay.com/bdc/search/?word=${word}`,

@@ -1,5 +1,5 @@
 <style lang="less">
-.container{
+.container {
   background-color: #eee;
 }
 .swiperarea {
@@ -28,32 +28,34 @@
   z-index: 2;
   padding: 20px;
 }
-.line{
-  width:90%;
-  height:2rpx;
-  background:#aaa;
-  margin:20px;
+.line {
+  // width: 90%;
+  // height: 2rpx;
+  background: #aaa;
+  margin: 15rpx;
 }
-.cards-area{
-  width:100%;
+.cards-area {
+  width: 100%;
 }
 </style>
 <template>
   <view class="container">
      <view class="swiperarea">
         <swiper indicator-dots="true" indicator-color="#fff" class='swiper' style="height:400rpx">
-          <repeat for="{{objects}}">
+          <repeat for="{{swiperObjects}}">
             <swiper-item class="swiper-item">
               <text class="title_en">{{item.title_en}}</text>
-              <image src="{{item.thumbnail_urls[0]}}" class="slide-image" mode='widthFix'/>
+              <image src="{{item.thumbnail_urls[0]}}" class="slide-image" mode='widthFix' @tap="tap({{item.id}})"/>
             </swiper-item>
           </repeat>
         </swiper>
       </view>
       <view class="line"></view>
       <view class="cards-area">
-        <repeat for="{{objects}}">
+        <repeat for="{{detail.objects}}" >
+          <view @tap="tap({{item.id}})">
            <card :title="item.title_en" :content="item.summary" :grade="item.grade_info" :words="item.length" :reviews="item.num_reviews" :thumbnail="item.thumbnail_urls[0]"/>
+          </view>
         </repeat>
       </view>
   </view>
@@ -71,115 +73,36 @@ export default class Index extends wepy.page {
     card: Card
   }
   data = {
-    total: 10,
-    ipp: 5,
-    page: 1,
-    dad: 1,
-    objects: [
-      {
-        id: 'bstjlx',
-        title_en:
-          'Beijing kindergarten accused of drugging, molesting kids after parents find needle marks',
-        title_cn: '北京一幼儿园被指控虐童',
-        date: '2017-11-24',
-        grade: 3,
-        length: 456,
-        num_reviews: 1296,
-        grade_info: '高考',
-        thumbnail_urls: [
-          'https://media-image1.baydn.com/56e744f6027805a94af8b7486bd887acadd66d2381556a607dd762b491ce18d0.png@90Q',
-          'http://media-image1.qiniu.baydn.com/56e744f6027805a94af8b7486bd887acadd66d2381556a607dd762b491ce18d0.png?imageView2/2/q/90'
-        ],
-        summary:
-          "Yet another abuse scandal at a childcare center in China has sent shockwaves across the Chinese internet with parents accusing employees at a private Beijing kindergarten of drugging and sexually molesting their kids.  On Thursday, a group of parents protested outside of an RYB Education kindergarten in the capital's Chaoyang District, demanding to talk to the principal and be allowed to watch surveillance video from inside of the school to find evidence of how their children were being abused. ...",
-        source_id: 'vsmce',
-        is_liked: false,
-        is_reviewed: false,
-        is_finished: false
-      },
-      {
-        id: 'bfyie',
-        title_en: 'Aircraft fueled by waste cooking oil takes off from Beijing',
-        title_cn: '以餐饮废油为燃料的海航客机在北京起飞',
-        date: '2017-11-22',
-        grade: 5,
-        length: 176,
-        num_reviews: 1082,
-        grade_info: '六级/考研',
-        thumbnail_urls: [
-          'https://media-image1.baydn.com/8fdd18a81d67d722ed29013c45a5ce06c670541329b9b373f26b6ec77019e59e.png@90Q',
-          'http://media-image1.qiniu.baydn.com/8fdd18a81d67d722ed29013c45a5ce06c670541329b9b373f26b6ec77019e59e.png?imageView2/2/q/90'
-        ],
-        summary:
-          "Hainan Airlines Flight 497 took off from Beijing at 2:15 pm Tuesday, headed to Chicago. The aircraft flew with biological aviation fuel that is produced from waste cooking oil, signaling the first China-US flight to use green aviation fuel.  The flight on a Boeing 787 Dreamliner will arrive at Chicago O'Hare International Airport at 12:55 pm local time on Tuesday, after flying 11,297 kilometers. ...",
-        source_id: 'bczkqi',
-        is_liked: false,
-        is_reviewed: false,
-        is_finished: false
-      },
-      {
-        id: 'vvkis',
-        title_en:
-          'Ministry launches special inspection of kindergartens after abuse claims',
-        title_cn: '教育部对涉嫌虐童幼儿园开展专项督查',
-        date: '2017-11-24',
-        grade: 3,
-        length: 389,
-        num_reviews: 847,
-        grade_info: '高考',
-        thumbnail_urls: [
-          'https://media-image1.baydn.com/29418ffafad5051c4a71b1cfb2f628e8ca7aa4a14d07dae6cf1cb97ebf833fd4.png@90Q',
-          'http://media-image1.qiniu.baydn.com/29418ffafad5051c4a71b1cfb2f628e8ca7aa4a14d07dae6cf1cb97ebf833fd4.png?imageView2/2/q/90'
-        ],
-        summary:
-          "The Ministry of Education has deployed a special inspection on the management of kindergartens nationwide and asked local education authorities to take effective measures to improve teachers' morality and tighten supervision, the ministry said on Thursday evening.  The ministry attaches great importance to reports about suspected child abuse in some individual kindergartens and has required local education authorities to launch probes immediately, it said in a statement. ...",
-        source_id: 'bczkqi',
-        is_liked: false,
-        is_reviewed: false,
-        is_finished: false
-      },
-      {
-        id: 'vgvzx',
-        title_en:
-          "Beijing's kindergartens required to install and enhance cameras",
-        title_cn: '北京各幼儿园增加摄像头，要求实现无死角监控',
-        date: '2017-11-27',
-        grade: 3,
-        length: 508,
-        num_reviews: 837,
-        grade_info: '高考',
-        thumbnail_urls: [
-          'https://media-image1.baydn.com/132bd66a662016d46fa57fbdbc083b95364a098f85994d76736a3150fb735953.png@90Q',
-          'http://media-image1.qiniu.baydn.com/132bd66a662016d46fa57fbdbc083b95364a098f85994d76736a3150fb735953.png?imageView2/2/q/90'
-        ],
-        summary:
-          'Kindergartens in all districts in Beijing are required to increase their surveillance cameras to make sure that every corner is covered, Beijing Youth Daily reported Monday, following the widely discussed child abuse claims at a RYB kindergarten.  Authorities in all districts of Beijing have investigated the availability of cameras and their monitoring in kindergartens, and have deployed measures to increase security in these places. ...',
-        source_id: 'bczkqi',
-        is_liked: false,
-        is_reviewed: false,
-        is_finished: false
-      },
-      {
-        id: 'hhhdp',
-        title_en: 'East China explosion kills 2, injures many',
-        title_cn: '宁波江北区发生爆炸事故，致2死2重伤',
-        date: '2017-11-26',
-        grade: 3,
-        length: 77,
-        num_reviews: 823,
-        grade_info: '高考',
-        thumbnail_urls: [
-          'https://media-image1.baydn.com/39955e13feff2c0204d9d7390a14ba1f757d67037f84969da68d14f112e44786.png@90Q',
-          'http://media-image1.qiniu.baydn.com/39955e13feff2c0204d9d7390a14ba1f757d67037f84969da68d14f112e44786.png?imageView2/2/q/90'
-        ],
-        summary:
-          "NINGBO -- Two people were killed and many injured in an explosion at the site of a demolished factory in the city of Ningbo in East China's Zhejiang province Sunday, according to local authorities.  More than 30 people were taken to hospital, with two injured seriously, after the accident which occurred 8:50 am in Jiangbei district, local authorities said  Local police said many nearby residential communities were affected by the explosion.  An investigation is underway. ",
-        source_id: 'bczkqi',
-        is_liked: false,
-        is_reviewed: false,
-        is_finished: false
+    detail: {
+      objects: []
+    }
+  }
+  computed={
+    swiperObjects() {
+      return this.data.detail.objects.slice(0, 5) // 轮播图只取5个，要不然太多了
+    }
+  }
+  methods={
+    tap(id) {
+      wx.navigateTo({
+        url: `/pages/article?id=${id}`  // 打开一个新的同路由页面，但指定不同的数据初始值
+      })
+    }
+  }
+  onLoad() {
+    wx.showLoading({
+      title: '加载中'
+    })
+    wx.request({
+      url: `https://www.shanbay.com/api/v2/news/articles/?ipp=10&page=1`,
+      success: (res) => {
+        if (res.data.msg === 'SUCCESS') {
+          Object.assign(this.detail, res.data.data)
+        }
+        this.$apply()
+        wx.hideLoading()
       }
-    ]
-  };
+    })
+  }
 }
 </script>
