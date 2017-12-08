@@ -19,19 +19,6 @@
   height:200px;
   background-color: #e8e8e8;
 }
-
-.complete-button {
-  width: 60%;
-  border-radius: 5px;
-  margin: 20px auto;
-  padding-top: 2px;
-  font-size: 14px;
-  background-color: rgb(32, 158, 133);
-  color: white;
-  overflow: hidden;
-  height: 40px;
-}
-
 .paragrah {
   &:after {
     content: "";
@@ -69,24 +56,28 @@
     <information />
     <view class="title" >{{detail.title_en}}</view>
     <text class="source">via: {{detail.source.name_en}}</text>
-    <image src="{{articleImage.img.url}}" class="article-image" mode='widthFix' id="{{articleImage.id}}" alt="{{articleImage.img.desc.__cdata}}"/>
-    <view class="paragrah description">
-      <text wx:for="{{articleImageDescription}}" wx:key="index" wx:for-item="word"
-      data-index="{{index}}" data-word="{{word}}" data-sentenceid="{{articleImageDescriptionId}}"
-      id="{{articleImageDescriptionId}}" class='word' :class="{highlight:selectedWordPosition[0]===articleImageDescriptionId && selectedWordPosition[1]===index}">
-        {{word}}
-      </text>
-    </view>
       <view wx:for="{{paragrahs}}" wx:key="paragrah._id" wx:for-item="paragrah" class="paragrah" id="{{paragrah._id}}">
-          <block  wx:for="{{paragrah.sent}}" wx:key="index" wx:for-item="sentence">
-            <text wx:for="{{sentence.words}}" wx:key="index" wx:for-item="word" data-index="{{index}}" data-word="{{word}}"
-            data-sentenceid="{{sentence.id}}" id="{{sentence.id}}" class='word' :class="{highlight:selectedWordPosition[0]===sentence.id && selectedWordPosition[1]===index}">
-              {{word}}
-            </text>
+          <block wx:if="{{paragrah.sent}}">
+            <block  wx:for="{{paragrah.sent}}" wx:key="index" wx:for-item="sentence">
+              <text wx:for="{{sentence.words}}" wx:key="index" wx:for-item="word" data-index="{{index}}" data-word="{{word}}"
+              data-sentenceid="{{sentence.id}}" id="{{sentence.id}}" class='word' :class="{highlight:selectedWordPosition[0]===sentence.id && selectedWordPosition[1]===index}">
+                {{word}}
+              </text>
+            </block>
+          </block>
+          <block wx:else>
+            <image src="{{paragrah.img.url}}" class="article-image" mode='widthFix' id="{{paragrah._id}}"/>
+            <view class="paragrah description">
+              <text wx:for="{{paragrah.img.desc}}" wx:key="index" wx:for-item="word"
+              data-index="{{index}}" data-word="{{word}}" data-sentenceid="{{paragrah._id}}"
+              id="{{paragrah._id}}" class='word' :class="{highlight:selectedWordPosition[0]===paragrah._id && selectedWordPosition[1]===index}">
+                {{word}}
+              </text>
+            </view>
           </block>
       </view>
       <!-- 加wx:if是为了让加载完后才显示button，不然文章还没加载完整个页面就一个孤零零的button太丑了 -->
-    <button class="complete-button" wx:if="{{!!detail.title_en}}"> view comments </button>
+    <button class="btn" wx:if="{{!!detail.title_en}}"> view comments </button>
   </view>
 </template>
 
@@ -96,7 +87,7 @@ import X2JS from '../util/x2js.js'
 import Infomation from '../components/information'
 export default class Article extends wepy.page {
   config = {
-    navigationBarTitleText: '阅读'
+    navigationBarTitleText: '扇贝新闻'
   };
   components={
     information: Infomation
@@ -132,35 +123,30 @@ export default class Article extends wepy.page {
       return this.articleContent._id
     },
     paragrahs() {
-      return this.articleContent.para.slice(1).map(paragrah => {
-        if (!Array.isArray(paragrah.sent)) {
-          paragrah.sent = [].concat(paragrah.sent)
-        }
-        paragrah.sent = paragrah.sent.map(sent => {
-          let id = sent._id
-          let words = sent.__cdata.split(' ')
-          if (this.annotationObject && this.annotationObject[id]) {
-            for (let startIndex in this.annotationObject[id]) {
-              let {len, phrase} = this.annotationObject[id][startIndex]
-              words.splice(startIndex, len, phrase)
-              while (len--) {
-                words.splice(startIndex + 1, 0, '')
+      return this.articleContent.para.map(paragrah => {
+        if (paragrah.sent) {
+          if (!Array.isArray(paragrah.sent)) {
+            paragrah.sent = [].concat(paragrah.sent)
+          }
+          paragrah.sent = paragrah.sent.map(sent => {
+            let id = sent._id
+            let words = sent.__cdata.split(' ')
+            if (this.annotationObject && this.annotationObject[id]) {
+              for (let startIndex in this.annotationObject[id]) {
+                let {len, phrase} = this.annotationObject[id][startIndex]
+                words.splice(startIndex, len, phrase)
+                while (len--) {
+                  words.splice(startIndex + 1, 0, '')
+                }
               }
             }
-          }
-          return {words, id}
-        })
+            return {words, id}
+          })
+        } else {
+          paragrah.img.desc = paragrah.img.desc.__cdata ? paragrah.img.desc.__cdata.split(' ') : paragrah.img.desc
+        }
         return paragrah
       })
-    },
-    articleImage() {
-      return this.articleContent.para[0]
-    },
-    articleImageDescriptionId() {
-      return this.articleImage._id
-    },
-    articleImageDescription() {
-      return this.articleImage.img.desc.__cdata && this.articleImage.img.desc.__cdata.split(' ')
     },
     annotationObject() {
       let annotationObject = {}
@@ -179,11 +165,11 @@ export default class Article extends wepy.page {
     var x2js2 = new X2JS({keepCData: true})
     return x2js2.xml2js(content)
   }
-  onLoad(options) {
+  onLoad(options = {}) {
     wx.showLoading({
       title: '加载中'
     })
-    options = {id: 'oivfz'}
+    options.id = options.id || 'oivfz'
     wx.request({
       url: `https://www.shanbay.com/api/v2/news/articles/${options.id}/`,
       success: (res) => {
