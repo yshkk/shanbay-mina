@@ -183,6 +183,7 @@ export default class Article extends wepy.page {
     wx.showLoading({
       title: '加载中'
     })
+    options = {id: 'oivfz'}
     wx.request({
       url: `https://www.shanbay.com/api/v2/news/articles/${options.id}/`,
       success: (res) => {

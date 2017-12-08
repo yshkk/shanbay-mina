@@ -25,7 +25,7 @@
   bottom: 0;
   width: 100%;
 	margin: 0 auto;
-  height: 300rpx;
+  height: 1000rpx;
 	opacity: 1;
 	overflow: hidden;
 	background-color: #fff;
@@ -33,8 +33,13 @@
 	line-height: 18px;
   word-break: break-all;
   will-change: transform;
-	/* transform: translateX(-50%) translateY(-50%); */
-	animation: slideInUp .3s ;
+  /* transform: translateX(-50%) translateY(-50%); */
+  transform: translate3d(0, 550rpx, 0);
+  animation: slideInUpHalf .3s ;
+  transition: transform .3s;
+  &.isDetail{
+  transform: initial;
+  }
   .word{
     font-size: 16pt;
     font-weight: 400;
@@ -61,23 +66,74 @@
       display: block;
     }
   }
+  .detail-btn{
+    color:#28bea0;
+    border: 1px solid #28bea0;
+    background-color: #fff;
+    width:300rpx;
+    border-radius:5px;
+    padding-top:2px;
+    font-size:14px;
+    overflow:hidden;
+    height:40px;
+    position:absolute;
+    left:50%;
+    top:300rpx;
+    transform:translateX(-50%);
+    &.close{
+      top:850rpx;
+    }
+  }
+  .examples{
+    color: gray;
+    margin: 40rpx 0 20rpx;
+  }
+  .example-item{
+    margin-bottom: 20rpx;
+    .current-word{
+      color: rgb(32, 158, 133);
+    }
+  }
 }
-.slidedown{
+.slidedown-half{
+  animation: slideOutDownHalf .3s;
+}
+.sliderdown{
   animation: slideOutDown .3s;
 }
 .slidebar{
   width: 100%;
   background-color: #eee;
-  height: 60rpx;
+  height: 70rpx;
   color:#bdbdbd;
   text-align: center;
-  line-height: 60rpx;
+  line-height: 70rpx;
   font-family: 'iconfont';
   &:before{
       content: '\e6e0';
       margin-right: 10rpx;
       font-size: 16pt;
     }
+}
+@keyframes slideInUpHalf {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 550rpx, 0);
+  }
+}
+@keyframes slideOutDownHalf {
+  from {
+    transform: translate3d(0, 550rpx, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(0, 100%, 0);
+  }
 }
 @keyframes slideInUp {
   from {
@@ -99,12 +155,11 @@
     transform: translate3d(0, 100%, 0);
   }
 }
-
 </style>
 
 <template>
-		<view class="information" style="{{cssText}}" @tap.stop="stopPropagation"  :class="{information-show:!!visible,slidedown:isSlidingDown}">
-      <view class="slidebar" @touchmove="touchmove" @touchstart.stop="touchstart"></view>
+		<view class="information" style="{{cssText}}" @touchmove.stop="stopPropagation" @tap.stop="stopPropagation"  :class="{information-show:!!visible,slidedown-half:isSlidingDown && !isDetail,sliderdown:isSlidingDown && isDetail,isDetail:isDetail}">
+      <view class="slidebar" @touchmove="touchmove" @touchstart.stop="touchstart" @touchend="touchend"></view>
       <view class="information-content">
         <text class="word">{{word}}</text>
         <text class="pron">{{pron}}</text>
@@ -113,6 +168,19 @@
           <repeat for="{{definition}}">
             <text class="definition-item">{{item}}</text>
           </repeat>
+        </view>
+        <button class="detail-btn" @tap="viewMore" wx:if="{{!isDetail}}">查看例句</button>
+        <button class="detail-btn close" @tap="close" wx:else>关闭</button>
+        <view wx:if="{{isDetail}}">
+          <view class="examples">例句</view>
+          <block wx:for="{{examples}}" wx:key="index">
+            <view class="example-item">
+              <text>{{item.first}}</text>
+              <text class="current-word">{{item.word}}</text>
+              <text>{{item.last}}</text>
+              <view class="example-translation">{{item.translation}}</view>
+            </view>
+          </block>
         </view>
       </view>
     </view>
@@ -131,7 +199,8 @@ export default class TipBox extends wepy.component {
     pron: '',
     definition: '',
     isSlidingDown: false,
-    isDetail: false
+    isDetail: false,
+    examples: [{translation: '暂无例句'}]
   };
 
   computed = {
@@ -158,12 +227,26 @@ export default class TipBox extends wepy.component {
       this.audioCtx.play()
     },
     touchmove(e) {
+      console.log(e.touches[0].pageY)
+      if (this.isTouching) return
       let currentY = e.touches[0].pageY
+      if (currentY === this.lastY) return
       let isSlideDown = currentY > this.lastY
+      this.isTouching = true // 避免误触
       this.handleSlide(isSlideDown)
     },
     touchstart(e) {
+      console.log('start', e.touches[0].pageY)
       this.lastY = e.touches[0].pageY
+    },
+    touchend(e) {
+      this.isTouching = false
+    },
+    viewMore() {
+      this.getDetails()
+    },
+    close() {
+      this.hide()
     }
   }
   show({word, options}) {
@@ -181,11 +264,12 @@ export default class TipBox extends wepy.component {
       url: `https://api.shanbay.com/bdc/search/?word=${word}`,
       success: (res) => {
         if (res.data.msg === 'SUCCESS') {
-          var {audio, pron, definition} = res.data.data
+          var {audio, pron, definition, id} = res.data.data
           this.audio = audio
           this.pron = pron ? `/${pron}/` : ''
           this.definition = definition.split(/\r\n|\n|\r/)
           this.audioCtx.setSrc(audio)
+          this.wordId = id
         } else {
           this.pron = ''
           this.audioCtx.setSrc('')
@@ -208,8 +292,26 @@ export default class TipBox extends wepy.component {
       this.margin = ''
       this.isSlidingDown = false
       this.isDetail = false
+      this.examples = [{translation: '暂无例句'}]
       this.$apply()
     }, 300)
+  }
+  getDetails() {
+    this.isDetail = true
+    wx.request({
+      url: `https://api.shanbay.com/bdc/example/?vocabulary_id=${this.wordId}&type=sys`,
+      success: (res) => {
+        if (res.data.msg === 'SUCCESS' && res.data.data.length) {
+          this.examples = res.data.data.map(item => ({
+            first: item.first,
+            last: item.last,
+            word: item.word,
+            translation: item.translation
+          }))
+          this.$apply()
+        }
+      }
+    })
   }
   handleSlide(isSlideDown) {
     if (isSlideDown) {
@@ -217,7 +319,7 @@ export default class TipBox extends wepy.component {
         this.hide()
       }
     } else {
-      this.isDetail = true
+      this.getDetails()
     }
   }
   onLoad() {
