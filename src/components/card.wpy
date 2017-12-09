@@ -15,7 +15,7 @@
     padding:25rpx 25rpx;
     margin-bottom:30rpx;
     overflow:hidden;
-    color:#34495e;
+    color:#333;
     .title{
       font-size: 15pt;
       -webkit-line-clamp: 2;

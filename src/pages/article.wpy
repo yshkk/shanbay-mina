@@ -2,6 +2,7 @@
 .container {
   -webkit-font-smoothing: antialiased;
   padding: 0 25rpx;
+  height: auto;
 }
 .title {
   font-size: 20pt;
@@ -30,7 +31,7 @@
   }
   -webkit-font-smoothing: antialiased;
   width: 100%;
-  font-size:15pt;
+  font-size:14pt;
   color: #424242;
   margin: 20rpx 0;
   display: flex;
@@ -77,7 +78,7 @@
           </block>
       </view>
       <!-- 加wx:if是为了让加载完后才显示button，不然文章还没加载完整个页面就一个孤零零的button太丑了 -->
-    <button class="btn" wx:if="{{!!detail.title_en}}"> view comments </button>
+    <button class="btn" wx:if="{{!!detail.title_en}}" @tap="finish"> Back </button>
   </view>
 </template>
 
@@ -113,6 +114,11 @@ export default class Article extends wepy.page {
         let w = word.replace((/\W$|^\W/), '') // 去除标点（句号逗号）的单词
         this.$invoke('information', 'show', {word: w})
       }
+    },
+    finish() {
+      wx.navigateBack({
+        delta: 1
+      })
     }
   }
   computed = {
@@ -164,6 +170,14 @@ export default class Article extends wepy.page {
   parseContent(content) {
     var x2js2 = new X2JS({keepCData: true})
     return x2js2.xml2js(content)
+  }
+  onShareAppMessage() {
+    let id = this.detail.id
+    let title = this.detail.title_cn
+    return {
+      title: `扇贝新闻 - ${title}`,
+      path: `/pages/article?id=${id}`
+    }
   }
   onLoad(options = {}) {
     wx.showLoading({

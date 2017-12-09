@@ -17,7 +17,11 @@
 	  display: block;
   }
   .information-content{
-	  padding: 20px;
+    height: 200rpx;
+    width: initial;
+    .scroll-container{
+      padding: 20px;
+    }
   }
   display: none;
   position: fixed;
@@ -39,6 +43,9 @@
   transition: transform .3s;
   &.isDetail{
   transform: initial;
+  .information-content{
+    height: 750rpx;
+  }
   }
   .word{
     font-size: 16pt;
@@ -89,9 +96,14 @@
     margin: 40rpx 0 20rpx;
   }
   .example-item{
-    margin-bottom: 20rpx;
+    margin-bottom: 30rpx;
+    word-break: keep-all;
     .current-word{
       color: rgb(32, 158, 133);
+    }
+    .example-translation{
+      margin-top: 5rpx;
+      word-break:break-all;
     }
   }
 }
@@ -160,29 +172,32 @@
 <template>
 		<view class="information" style="{{cssText}}" @touchmove.stop="stopPropagation" @tap.stop="stopPropagation"  :class="{information-show:!!visible,slidedown-half:isSlidingDown && !isDetail,sliderdown:isSlidingDown && isDetail,isDetail:isDetail}">
       <view class="slidebar" @touchmove="touchmove" @touchstart.stop="touchstart" @touchend="touchend"></view>
-      <view class="information-content">
-        <text class="word">{{word}}</text>
-        <text class="pron">{{pron}}</text>
-        <audio class="audio" id="audio" src="{{audio}}" @tap="play"/>
-        <view class="definition">
-          <repeat for="{{definition}}">
-            <text class="definition-item">{{item}}</text>
-          </repeat>
+      <scroll-view scroll-y class="information-content">
+        <view class="scroll-container">
+          <text class="word">{{word}}</text>
+          <text class="pron">{{pron}}</text>
+          <audio class="audio" id="audio" src="{{audio}}" @tap="play"/>
+          <view class="definition">
+            <repeat for="{{definition}}">
+              <text class="definition-item">{{item}}</text>
+            </repeat>
+          </view>
+
+          <view wx:if="{{isDetail}}">
+            <view class="examples">例句</view>
+            <block wx:for="{{examples}}" wx:key="index">
+              <view class="example-item">
+                <text>{{item.first}}</text>
+                <text class="current-word">{{item.word}}</text>
+                <text>{{item.last}}</text>
+                <view class="example-translation">{{item.translation}}</view>
+              </view>
+            </block>
+          </view>
         </view>
-        <button class="detail-btn" @tap="viewMore" wx:if="{{!isDetail}}">查看例句</button>
-        <button class="detail-btn close" @tap="close" wx:else>关闭</button>
-        <view wx:if="{{isDetail}}">
-          <view class="examples">例句</view>
-          <block wx:for="{{examples}}" wx:key="index">
-            <view class="example-item">
-              <text>{{item.first}}</text>
-              <text class="current-word">{{item.word}}</text>
-              <text>{{item.last}}</text>
-              <view class="example-translation">{{item.translation}}</view>
-            </view>
-          </block>
-        </view>
-      </view>
+      </scroll-view>
+      <button class="detail-btn" @tap="viewMore" wx:if="{{!isDetail}}">查看例句</button>
+      <button class="detail-btn close" @tap="close" wx:else>关闭</button>
     </view>
 </template>
 
@@ -200,7 +215,8 @@ export default class TipBox extends wepy.component {
     definition: '',
     isSlidingDown: false,
     isDetail: false,
-    examples: [{translation: '暂无例句'}]
+    examples: [{translation: '暂无例句'}],
+    wordId: 0
   };
 
   computed = {
@@ -227,7 +243,6 @@ export default class TipBox extends wepy.component {
       this.audioCtx.play()
     },
     touchmove(e) {
-      console.log(e.touches[0].pageY)
       if (this.isTouching) return
       let currentY = e.touches[0].pageY
       if (currentY === this.lastY) return
@@ -236,7 +251,6 @@ export default class TipBox extends wepy.component {
       this.handleSlide(isSlideDown)
     },
     touchstart(e) {
-      console.log('start', e.touches[0].pageY)
       this.lastY = e.touches[0].pageY
     },
     touchend(e) {
@@ -264,7 +278,8 @@ export default class TipBox extends wepy.component {
       url: `https://api.shanbay.com/bdc/search/?word=${word}`,
       success: (res) => {
         if (res.data.msg === 'SUCCESS') {
-          var {audio, pron, definition, id} = res.data.data
+          var {audio, pron, definition, id, content} = res.data.data
+          this.word = content // 用返回的词展示，例如查询的单词是“Daily”,返回的是“daily”，以返回的结果为准
           this.audio = audio
           this.pron = pron ? `/${pron}/` : ''
           this.definition = definition.split(/\r\n|\n|\r/)
@@ -293,6 +308,7 @@ export default class TipBox extends wepy.component {
       this.isSlidingDown = false
       this.isDetail = false
       this.examples = [{translation: '暂无例句'}]
+      this.wordId = 0
       this.$apply()
     }, 300)
   }
@@ -324,6 +340,12 @@ export default class TipBox extends wepy.component {
   }
   onLoad() {
     this.audioCtx = wx.createAudioContext('audio')
+    // wx.request({
+    //   url: 'https://www.shanbay.com/api/v2/news/notes/?para_id=A152718P134718&ipp=3&page=1',
+    //   success: (res) => {
+    //     // debugger
+    //   }
+    // })
   }
 }
 </script>

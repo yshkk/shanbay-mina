@@ -5,6 +5,9 @@
 .swiperarea {
   width: 100%;
 }
+.swiper{
+  height:400rpx;
+}
 .slide-image {
   width: 100%;
   height: 100%;
@@ -36,12 +39,40 @@
 }
 .cards-area {
   width: 100%;
+  .date{
+    color: #666;
+    text-align: center;
+    margin-bottom: 10rpx;
+    opacity: .8;
+    &:before{
+      position: absolute;
+      content: "————";
+      left:450rpx;
+      right:0;
+    }
+    &:after{
+      position: absolute;
+      content: "————";
+      left:0;
+      right:450rpx;
+    }
+  }
 }
+.info{
+  color:gray;
+  opacity:.8;
+  margin-bottom: 20rpx;
+  &.loading{
+    width: 70rpx;
+    height: 70rpx;
+  }
+}
+
 </style>
 <template>
   <view class="container">
      <view class="swiperarea">
-        <swiper indicator-dots="true" indicator-color="#fff" class='swiper' style="height:400rpx">
+        <swiper indicator-dots="true" indicator-color="#fff" class='swiper' autoplay>
           <repeat for="{{swiperObjects}}">
             <swiper-item class="swiper-item">
               <text class="title_en">{{item.title_en}}</text>
@@ -53,11 +84,14 @@
       <view class="line"></view>
       <view class="cards-area">
         <repeat for="{{detail.objects}}" >
-          <view @tap="tap({{item.id}})">
+          <view @tap="tap({{item.id}})" wx:if="{{item.id}}">
            <card :title="item.title_en" :content="item.summary" :grade="item.grade_info" :words="item.length" :reviews="item.num_reviews" :thumbnail="item.thumbnail_urls[0]"/>
           </view>
+          <view class="date" wx:if="{{index!==0&&item.date!==detail.objects[index-1].date}}">{{item.date}}</view>
         </repeat>
       </view>
+      <text class="info" wx:if="{{info}}">{{info}}</text>
+      <image wx:else class="info loading" src="../assets/loading.gif"/>
   </view>
 </template>
 
@@ -67,7 +101,10 @@ import Card from '../components/card'
 
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '扇贝新闻'
+    navigationBarTitleText: '扇贝新闻',
+    window: {
+      enablePullDownRefresh: true
+    }
   }
   components = {
     card: Card
@@ -75,7 +112,10 @@ export default class Index extends wepy.page {
   data = {
     detail: {
       objects: []
-    }
+    },
+    isLoadingMore: false,
+    currentPage: 1,
+    info: ''
   }
   computed={
     swiperObjects() {
@@ -93,11 +133,35 @@ export default class Index extends wepy.page {
     wx.showLoading({
       title: '加载中'
     })
+    this.loadList()
+  }
+  onPullDownRefresh() {
+    console.log(1)
+    wx.stopPullDownRefresh()
+  }
+  onReachBottom() {
+    this.currentPage++
+    if (this.currentPage >= 10) { // 最多只能加载10页
+      this.isLoadingMore = false
+      this.info = 'No more news'
+      this.$apply()
+      return
+    }
+    this.isLoadingMore = true
+    this.loadList()
+  }
+  onShareAppMessage() {
+    return {
+      title: '扇贝新闻',
+      path: '/pages/index'
+    }
+  }
+  loadList() {
     wx.request({
-      url: `https://www.shanbay.com/api/v2/news/articles/?ipp=10&page=1`,
+      url: `https://www.shanbay.com/api/v2/news/articles/?ipp=10&page=${this.currentPage}`,
       success: (res) => {
         if (res.data.msg === 'SUCCESS') {
-          Object.assign(this.detail, res.data.data)
+          this.detail.objects = this.detail.objects.concat(res.data.data.objects)
         }
         this.$apply()
         wx.hideLoading()
