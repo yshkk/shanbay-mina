@@ -101,7 +101,7 @@ import Card from '../components/card'
 
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '扇贝新闻',
+    navigationBarTitleText: 'News Lite',
     window: {
       enablePullDownRefresh: true
     }
@@ -152,7 +152,7 @@ export default class Index extends wepy.page {
   }
   onShareAppMessage() {
     return {
-      title: '扇贝新闻',
+      title: 'News Lite',
       path: '/pages/index'
     }
   }

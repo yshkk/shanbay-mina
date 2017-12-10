@@ -88,7 +88,7 @@ import X2JS from '../util/x2js.js'
 import Infomation from '../components/information'
 export default class Article extends wepy.page {
   config = {
-    navigationBarTitleText: '扇贝新闻'
+    navigationBarTitleText: 'News Lite'
   };
   components={
     information: Infomation
@@ -148,8 +148,10 @@ export default class Article extends wepy.page {
             }
             return {words, id}
           })
-        } else {
+        } else if (paragrah.img) {
           paragrah.img.desc = paragrah.img.desc.__cdata ? paragrah.img.desc.__cdata.split(' ') : paragrah.img.desc
+        } else {
+          paragrah.img = {}
         }
         return paragrah
       })
@@ -175,7 +177,7 @@ export default class Article extends wepy.page {
     let id = this.detail.id
     let title = this.detail.title_cn
     return {
-      title: `扇贝新闻 - ${title}`,
+      title: `News Lite - ${title}`,
       path: `/pages/article?id=${id}`
     }
   }
